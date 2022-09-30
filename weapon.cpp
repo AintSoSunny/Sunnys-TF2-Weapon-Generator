@@ -17,18 +17,233 @@ int Wep::addSeed(int digits) {
 	cout << "Added seed: " << newSeed << endl;
 	return newSeed;
 }
+void Wep::addList(int arr[][2], int size, bool whitelist) {
+	if (whitelist == true) {
+		tempInt = 0; //whitelist doesn't work like an actual whitelist, it just un-blacklists stats instead of exclusively offering some stats. 
+	} else {
+		tempInt = 2;
+	}
+	for (int i = 0; i < size; i++) {
+		if (arr[i][1] == -1) {
+			for (int j = 0; j < statCatNum[arr[i][0]]; j++) {
+				statsUsed[arr[i][0]][j] = tempInt;
+				cout << "statsUsed[" << arr[i][0] << "][" << j << "] = " << statsUsed[arr[i][0]][j] << endl;	
+			}
+		} else {
+			statsUsed[arr[i][0]][arr[i][1]] = tempInt;
+		cout << "statsUsed[" << arr[i][0] << "][" << arr[i][1] << "] = " << statsUsed[arr[i][0]][arr[i][1]] << endl;	
+		}
+	}
+}
+void Wep::blacklist(int type) {
+	switch(type) { 
+		//all arrays with {0,0} are placeholders; case statements are for organization and a phase-like blacklist so nothing is forgotten or repeated
+		case 0:
+			//slot
+			if (wepSlot == "primary") {
+				int arr[3][2] = {
+					{1,3},
+					{1,13},
+					{2,4}
+				};	
+				addList(arr, sizeof(arr) / sizeof(arr[0])); //this solution is me giving up :)
+			} else if (wepSlot == "secondary") {int arr[1][2] = {{0,0}};} else if (wepSlot == "melee") {
+				int arr[6][2] = {
+					{0,1},
+					{0,9},
+					{1,4},
+					{1,6},
+					{1,8},
+					{1,9}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]));
+			} else {};
+			break;
+		case 1:
+			//weapon
+			if (wepType == "Flame Thrower") {
+				int arr[2][2] = {
+					{5,2},
+					{5,3}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]), true);
+			} else if (wepType == "Stickybomb Launcher") {
+				int arr[6][2] = {
+					{5,5},
+					{5,6},
+					{5,7},
+					{5,8},
+					{5,9},
+					{5,10}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]), true);
+			} else if (wepType == "Shield") {
+				int arr[5][2] = {
+					{5,4},
+					{5,11},
+					{5,12},
+					{5,13},
+					{5,14}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]), true);
+			} else if (wepType == "Minigun") {
+				int arr[2][2] = {
+					{5,16},
+					{5,17}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]), true);
+			} else if (wepType == "Medigun") {
+				int arr[4][2] = {
+					{5,23},
+					{5,24}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]), true);
+				} else if (wepType == "Knife") {
+				int arr[3][2] = {
+					{0,3},
+					{0,6},
+					{1,13}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]));
+			} else {}
+			break;
+		case 2:
+			//class
+			if (tfClass == "Pyro") {
+				int arrBL[1][2] = {
+					{0,8}
+				};
+				addList(arrBL, sizeof(arrBL) / sizeof(arrBL[0]), false);
+				int arrWL[2][2] = {
+					{5,0},
+					{5,1}
+				};
+				addList(arrWL, sizeof(arrWL) / sizeof(arrWL[0]), true);
+			} else if (tfClass == "Demoman") {
+				int arrWL[1][2] = {
+					{5,7}
+				};
+				addList(arrWL, sizeof(arrWL) / sizeof(arrWL[0]), true);
+				if (wepSlot == "melee") {
+					int arrWLSword[2][2] = {
+						{5,14},
+						{5,15}
+					};
+				addList(arrWLSword, sizeof(arrWLSword) / sizeof(arrWLSword[0]), true);
+				} else if (wepType == "Boots") {
+				int arr[3][2] = {
+					{5,4},
+					{5,11},
+					{5,12}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]), true);
+				}
+			} else if (tfClass == "Heavy") {
+				int arr[2][2] = {
+					{5,16},
+					{5,17}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]), true);
+			} else if (tfClass == "Engineer") {
+				int arr[4][2] = {
+					{5,18},
+					{5,19},
+					{5,20},
+					{5,21}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]), true);
+				} else if (tfClass == "Medic") {
+					if (wepType == "Medigun") {
+						int arrNonMedi[2][2] = {
+							{5,23},
+							{5,23}
+						};
+						addList(arrNonMedi, sizeof(arrNonMedi) / sizeof(arrNonMedi[0]), true);
+					}
+				} else if (tfClass == "Sniper") {
+					if (wepSlot == "primary") {
+						int arrPrim[2][2] = {
+							{0,1},
+							{0,6}
+						};
+						addList(arrPrim, sizeof(arrPrim) / sizeof(arrPrim[0]));
+						int arrPrimWL[3][2] = {
+							{5,25},
+							{5,26},
+							{5,27}
+						};
+						addList(arrPrimWL, sizeof(arrPrimWL) / sizeof(arrPrimWL[0]), true);
+				}
+			}
+			break;
+		case 3:
+			//special
+			if (wearable == true) {	
+				int arrBL[5][2] = {
+					{0,1},
+					{0,9},
+					{1,-1},
+					{3,1},
+					{3,2}
+				};
+				addList(arrBL, sizeof(arrBL) / sizeof(arrBL[0]), false);
+				int arrWL[3][2] = {
+					{1,7},
+					{1,10},
+					{1,12}
+				};
+				addList(arrWL, sizeof(arrWL) / sizeof(arrWL[0]), true);
+			} else if (clipless == true) {
+				int arr[4][2] = {
+					{0,2},
+					{0,8},
+					{0,9},
+					{1,9}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]));
+			} else if (rapidFire == true) {
+				int arr[2][2] = {
+					{0,9},
+					{0,5}
+				};
+				addList(arr, sizeof(arr) / sizeof(arr[0]));
+			} else if (projectile == true) {
+				int arrWL[5][2] = {
+					{4,0},
+					{4,1},
+					{4,2},
+					{4,3},
+					{4,4}
+				};
+				addList(arrWL, sizeof(arrWL) / sizeof(arrWL[0]), true);
+			} else if (explosive == true) {
+				int arrWL[1][2] = {
+					{4,-1}
+				};
+				addList(arrWL, sizeof(arrWL) / sizeof(arrWL[0]), true);
+			}
+			break;
+		default:
+			cout << "\nuh oh\n\n";
+	}
+};
 Wep::Wep(int num, bool preSeed){
 	//this seed segment does nothing it just puts the version inside to make sure the seed isn't old
+	posNegSplit = false;
 	tempInt = floor(version*10);
 	seed.push_back(tempInt);
 	fullSeed += to_string(tempInt);
 	seedSegLengths.push_back(to_string(tempInt).length());
-	//stats Used Chart fill with 0
+	//stats Used Chart fill with 0 for the non-exclusive stat groups
 	tempInt = sizeof(statCatNum) / sizeof(statCatNum[0]);
  	for (int i = 0; i < tempInt; i++) {
 		if (statCatNum[i] != 0) {
 			for (int j = 0; j < statCatNum[i]; j++) {
-				statsUsed[i].push_back(0);
+				if (i < 4) {
+					statsUsed[i].push_back(0);	
+				} else {
+					statsUsed[i].push_back(2);
+				}
 			}
 		}
 	}
@@ -44,17 +259,31 @@ Wep::Wep(int num, bool preSeed){
 		//35% chance
 		wepSlot = "secondary";
 		wepIndexFloor = 15;
-		wepIndexCeiling = 33;
+		wepIndexCeiling = 35;
 	} else {
 		//25% chance
 		wepSlot = "melee";
-		wepIndexFloor = 33;
-		wepIndexCeiling = 64;
+		wepIndexFloor = 35;
+		wepIndexCeiling = 68;
 	}
+	realWepSlot = wepSlot;
+	if (distance(begin(primaryLike), find(begin(primaryLike), end(primaryLike), wepType)) != distance(begin(primaryLike), end(primaryLike))) {
+		cout << "This weapon is like a primary!\n";
+		wepSlot = "primary";
+		} else if (distance(begin(secondaryLike), find(begin(secondaryLike), end(secondaryLike), wepType)) != distance(begin(secondaryLike), end(secondaryLike))) {
+		cout << "This weapon is like a secondary!\n";
+		wepSlot = "secondary";
+		}
+	//placeholder used by blacklist
+	statsUsed[0][0] = 2;
+	cout << "statsUsed[0][0] = " << statsUsed[0][0] << endl;
+	cout << "This weapon is a " << wepSlot << " weapon!\n";
+	blacklist(0);
 	wepIndexCeiling -= wepIndexFloor;
 	wepIndex = rand() % wepIndexCeiling + wepIndexFloor;
 	wepType = weaponList[wepIndex];
-	
+	cout << "This weapon is a " << wepType << "!\n";
+	blacklist(1);
 	for (int i = 0; i < 10; i++) {
 		/*cant use find() in multidimesional array so... take the array to a vector lol I have no idea if this works :) 
 ANYWAYS this determens the class based on the weapon*/
@@ -70,29 +299,60 @@ tempInt = distance(begin(classWeapons), find(begin(classWeapons[classIndex]), en
 			break;
 		}
 	}
-	//removes * on "Boots*", "Parachute*", & "Shotgun*"
+	cout << "This weapon is for the " << tfClass << "!\n";
+	blacklist(2);
+	//removes * on "Boots*", "Parachute*", & the shotguns
 	if (wepType.find("*") != string::npos) {
-		wepType.replace(wepType.find("*"), 1, "");
+		wepType.erase(wepType.find("*"), 1);
 	}
+	//whenActive / wearable
 	tempInt = distance(begin(wearables), find(begin(wearables), end(wearables), wepType));
 	if (tempInt != distance(begin(wearables), end(wearables))) {
+		cout << "This weapon is wearable!\n";
 		wearable = true;
+		whenActive = false;
 		wepRating -= wearBoost[tempInt];
-	}
-	cout << "Wearable! Wep: " << wepType << "; Index: " << tempInt << endl;
-	tempInt = distance(begin(alreadyBad), find(begin(alreadyBad), end(alreadyBad), wepType));
-	if (tempInt != distance(begin(alreadyBad), end(alreadyBad))) {
-		cout << "Bad weapon! (lol) Wep: " << wepType << "; Index: " << tempInt << endl;
-		wepRating -= howBad[tempInt];
-	}
-	//whenActive
-	tempInt = rand() % 100;
-	cout << wepSlot << "; " << tempInt << endl;
-	if (wepSlot == "primary" && tempInt < 5 || wepSlot == "secondary" && tempInt < 20 || wepSlot == "melee" && tempInt < 75) {
+		if (tempInt < 2 && wepSlot == "primary") {
+			wepRating -= 25;
+		}
+		else if (wepType == "Sheild" && num < 4) {
+			num = 4;
+		}
+	} else if (wepSlot == "primary" && tempInt < 5 || wepSlot == "secondary" && tempInt < 20 || wepSlot == "melee" && tempInt < 75) {
 		whenActive = true;
 	} else {
 		whenActive = false;
 	}
+	//bad, projectile, meter, clipless
+	tempInt = distance(begin(alreadyBad), find(begin(alreadyBad), end(alreadyBad), wepType));
+	if (tempInt != distance(begin(alreadyBad), end(alreadyBad))) {
+		cout << "Bad weapon! (lol)\n";
+		wepRating -= howBad[tempInt];
+	}
+	tempInt = distance(begin(projectileBased), find(begin(projectileBased), end(projectileBased), wepType));
+	if (tempInt != distance(begin(projectileBased), end(projectileBased))) {
+		if (tempInt < 8) {
+			cout << "This weapon is a projectile weapon!\n";
+		} else {
+			cout << "This weapon is an explosive weapon!\n";
+			explosive = true;
+		}
+		projectile = true;
+	}
+	tempInt = distance(begin(meterWeapons), find(begin(meterWeapons), end(meterWeapons), wepType));
+	if (tempInt != distance(begin(meterWeapons), end(meterWeapons))) {
+		cout << "This weapon has a " << meterNames[tempInt] << " meter!\n";
+		hasMeter = true;
+	}
+	if (distance(begin(cliplessWeapons), find(begin(cliplessWeapons), end(cliplessWeapons), wepType)) != distance(begin(cliplessWeapons), end(cliplessWeapons))) {
+		cout << "This weapon has no clip!\n";
+	clipless = true;
+	}
+	if (distance(begin(rapidFireWeapons), find(begin(rapidFireWeapons), end(rapidFireWeapons), wepType)) != distance(begin(rapidFireWeapons), end(rapidFireWeapons))) {
+		cout << "This is a rapid fire weapon!\n";
+	rapidFire = true;
+	}
+	blacklist(3);
 	statPhase = 1;
 	//n loop is for downsides
 	for (int n = 0; n < 2; n++) {
@@ -113,32 +373,40 @@ tempInt = distance(begin(classWeapons), find(begin(classWeapons[classIndex]), en
 			statAttempts = 0;
 			while (statMade == false) {
 				addSeed();
-				mod = rand() % 29 - 8;
-				if (mod < 0) {
-					mod *= -1;
-				}
+				mod = abs(rand() % 29 - 8);
 				if (mod <= 8) {
 					mod += 2;
 				}
-				if (statPhase == 2 && mod > 0) {
+				if (statPhase == 2 && mod > 0 && wepRating > -2.5) {
 					mod *= -1;
 				}
-				statCat = rand() % 4;
+				statCat = rand() % 6;
 				subStat = rand() % statCatNum[statCat];
-				if (statsUsed[statCat][subStat] != 1) {
+				if (statPhase == 1) {
+					tempInt = 1;
+				} else {
+					tempInt = 2;
+				}
+				if (statsUsed[statCat][subStat] < tempInt) {
+					posNegSplit = false;
 					cout << "Generating stat...";
-					wepStats.emplace_back(mod, statCat, subStat, wepType, wepSlot, tfClass, whenActive, hasMeter, wearable);
+					wepStats.emplace_back(mod, statCat, subStat, wepType, wepSlot, tfClass, whenActive, hasMeter, wearable, rapidFire);
 					newWepRating = wepRating + wepStats[statNum].rating;
 					cout << "...stat coordinates = (" << statCat << ", " << subStat << ")\n";
-					if (statPhase == 2 && 0.1 * (abs(newWepRating) + 1) <= 0.6) {
+					if (statPhase == 2 && 0.1 * (abs(newWepRating) + 1) <= 0.35) {
 						wepRating = newWepRating;
 						cout << wepStats.back().statString;
 						cout << "\nWeapon Complete\n";
 						cout << "wepRating = " << wepRating;
 						return; //weapon is balanced; end stat creation
-					} else if (statPhase == 1 or newWepRating >= -5) {
+					} else if (wepStats.back().statString != "" && statPhase == 1 || wepStats.back().statString != "" && newWepRating >= -5) {
 						cout << "Stat creation successful!\n";
-						statsUsed[statCat][subStat] = 1;
+						if (posNegSplit == true) {
+							statsUsed[statCat][subStat] += 1;
+						} else {
+							statsUsed[statCat][subStat] += 2;	
+						}
+						cout << "statsUsed[" << statCat << "][" << subStat << "] = " << statsUsed[statCat][subStat] << endl;
 						wepRating = newWepRating;
 						cout << wepStats.back().statString;
 						cout << "\nstat coordinates = (" << statCat << ", " << subStat << ")\n";
@@ -171,9 +439,11 @@ tempInt = distance(begin(classWeapons), find(begin(classWeapons[classIndex]), en
 		}
 		statPhase = 2;
 		num = 1;
+		//filling half stats with 1s for (int i = 0; i < statCatNum[0]; j++) {}
+		replace (statsUsed[0].begin(), statsUsed[0].end(), 0, 1);
 	}
 	cout << seed.size();
-};
+}
 void Wep::printStats(bool debug) {
 	//for debug :)
 	cout << "\nWEAPON\n\n";

@@ -1,6 +1,6 @@
 #include "data.hpp"
-double version = 0.1;
-const string weaponList[64] = {
+double version = 0.2;
+const string weaponList[68] = {
 	"Scattergun",
 	"Peppergun",
 	"Rocket Launcher",
@@ -12,6 +12,7 @@ const string weaponList[64] = {
 	"Minigun",
 	"Shotgun*",
 	"Sniper Rifle",
+	"Bow",
 	"Syringe Gun",
 	"Crossbow",
 	"Revolver",
@@ -29,9 +30,11 @@ const string weaponList[64] = {
 	"Stickybomb Launcher",
 	"Shield",
 	"*Shotgun",
+	"Lunchbox*",
 	"Laser Pointer",
 	"SMG",
 	"Jar-Based Karate",
+	"Shield*",
 	"Backpack",
 	"Medigun",
 	"Sapper",
@@ -54,6 +57,7 @@ const string weaponList[64] = {
 	"Rake",
 	"RIFT Fire Axe",
 	"Bottle",
+	"Sword",
 	"Golf Club",
 	"Caber Grenade",
 	"Fists",
@@ -79,13 +83,11 @@ const string classList[10] = {
 	"Multi"
 };
 const string classWeapons[10][15] = {
-
 	/*Scout*/{
 		"Scattergun",
 		"Peppergun",
-		"Pistol",
 		"Cleaver",
-		"Lunchbox",
+		"Lunchbox*", //scout specific lunchbox (drink)
 		"Non-Milk Substance",
 		"Bat",
 		"Fish",
@@ -94,8 +96,7 @@ const string classWeapons[10][15] = {
 		"RIFT Fire Mace",
 		"Gunbai",
 		"Placeholder"
-	},
-	/*Soldier*/{
+	},/*Soldier*/{
 		"Rocket Launcher",
 		"Battle Banner",
 		"Boots", 
@@ -105,8 +106,7 @@ const string classWeapons[10][15] = {
 		"Katana",
 		"Riding Crop",
 		"Placeholder"
-	},
-	/*Pyro*/{
+	},/*Pyro*/{
 		"Flame Thrower",
 		"Flame Launcher",
 		"Flare Gun",
@@ -121,62 +121,61 @@ const string classWeapons[10][15] = {
 		"Rake",
 		"RIFT Fire Axe",
 		"Placeholder"
-	},
-	/*Demoman*/{
+	},/*Demoman*/{
 		"Grenade Launcher",
 		"Boots*",
 		"Parachute*",
 		"Stickybomb Launcher",
 		"Shield",
-		"Sword",
+		"Sword*",
 		"Bottle",
 		"Golf Club",
 		"Caber Grenade",
 		"Placeholder"
-	},
-	/*Heavy*/{
+	},/*Heavy*/{
 		"Minigun",
 		"*Shotgun" //heavy specific shotgun b/c why not
-		"Lunchbox",
+		"Lunchbox", //heavy specific lunchbox
 		"Fists",
 		"Boxing Gloves",
 		"Mittens",
 		"Placeholder"
-	},
-	/*Engineer*/{
+	},/*Engineer*/{
 		"Shotgun*",
 		"Pistol",
 		"Laser Pointer",
 		"Wrench",
 		"Robot Arm",
+		"Construction PDA",
+		"Destruction PDA"
 		"Placeholder"
-	},
-	/*Sniper*/{
+	},/*Sniper*/{
 		"Sniper Rifle",
-		"Sheild",
+		"Bow",
+		"Sheild*",
 		"SMG",
 		"Jar",
 		"Backpack",
 		"Kukri",
 		"Placeholder"
-	},
-	/*Medic*/{
+	},/*Medic*/{
 		"Syringe Gun",
 		"Crossbow",
 		"Medigun",
 		"Bonesaw",
 		"Statue Head",
 		"Placeholder"
-	},
-	/*Spy*/{
+	},/*Spy*/{
 		"Revolver",
 		"Sapper",
 		"Knife",
+		"Disguise Kit",
+		"Invis Watch"
 		"Placeholder"
-	},
-	/*Multiclass*/{
+	},/*Multiclass*/{
 		"Shotgun", //shotgun for soldier, pyro, heavy, & engie
 		//"Shot*gun", // shotgun for soldier & pyro
+		"Pistol",
 		"Placeholder"
 	}
 }; //need placeholder b/c of find
@@ -188,20 +187,22 @@ const string weaponSlots[5] = {
 	"PDA2"
 	PDAs unused for now*/
 };
-const string wearables[6] = {
+const string wearables[7] = {
 	"Boots",
 	"Parachute",
 	"Battle Banner",
+	"Jetpack",
 	"Shield",
 	"Backpack",
 	"Placeholder"
 };
-const double wearBoost[5] = {
-	12.5,
+const double wearBoost[6] = {
 	15,
-	5,
+	35,
 	15,
-	5
+	10,
+	75,
+	15
 };
 const string alreadyBad[4] = {
 	"*Shotgun",
@@ -213,4 +214,91 @@ const double howBad[3] = {
 	5,
 	5.5,
 	10
+};
+const string projectileBased[13] = {
+	"Flame Thrower",
+	"Flame Launcher",
+	"Syringe Gun",
+	"Crossbow",
+	"Cleaver",
+	"Non-Milk Substance",
+	"Gas Canister",
+	"Jar-Based Karate",
+	"Rocket Launcher",
+	"Grenade Launcher",
+	"Stickybomb Launcher",
+	"Flare Gun",
+	"Placeholder"
+};
+const string meterWeapons[14] = {
+	"Cleaver",
+	"Lunchbox*",
+	"Non-Milk Substance",
+	"Battle Banner",
+	"Jetpack",
+	"Gas Canister",
+	"Stickybomb Launcher",
+	"Shield",
+	"Lunchbox",
+	"Sniper Rifle",
+	"Jar-Based Karate",
+	"Backpack",
+	"Medigun",
+	"Invis Watch"
+};
+const string meterNames[14] = {
+	"Cleaver",
+	"Drink",
+	"Jar",
+	"Rage",
+	"Jetpack",
+	"Gas",
+	"charge",
+	"Charge",
+	"Food",
+	"charge",
+	"Jar",
+	"recharge",
+	"ÜberCharge",
+	"cloak"
+}; 
+const string moreMeterNames[4] = { //exsisting names that arent exclusive to a weapon type (Soda Popper is a scattergun with hype; not all scatterguns have a meter though)
+	"Hype",
+	"Boost",
+	"Jar",
+	"Focus"
+}; 
+const string cliplessWeapons[9] = {
+	"Flamethrower",
+	"Minigun",
+	"Sniper Rifle",
+	"Cleaver",
+	"Flare Gun",
+	"Laser Pointer",
+	"Medigun",
+	"Sapper",
+	"Placeholder"
+};
+const string rapidFireWeapons[8] = {
+	"Flame Thrower",
+	"Minigun",
+	"Syringe Gun",
+	"Pistol",
+	"SMG",
+	"Medigun",
+	"Sapper",
+	"Placeholder"
+};
+const string primaryLike[5] {
+	"Stickybomb Launcher",
+	"*Shotgun",
+	"Medigun",
+	"Wrench",
+	"Knife"
+};
+const string secondaryLike[4] {
+	"Shotgun*",
+	"Syringe Gun",
+	"Crossbow",
+	"Revolver"
 };
