@@ -444,7 +444,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 				}
 				case 13:
 					posNegSplit = true;
-					cout << "subStat = " << subStat << endl;
+					cout << "subStat = " << subStat << "; mod = " << mod << endl;
 					if (mod > 0) {
 						if (wearable == true) {
 							statTemp = "On $l Hit$i: $o";
@@ -520,7 +520,8 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 			switch(subStat) {
 				case 0:
 					statTemp = "$n% movement speed $w";
-					ratingBase = 2.5;
+					mod %= 10;
+					ratingBase = 2.25;
 					if (mod < 0) {
 						ratingBase = 3.125;
 					}
@@ -1045,7 +1046,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 		ratingBase *= damTypeRatings[tempInt];
 	}
 	while (statString.find("$e") != string::npos) {
-		if (statString.find("*") != string::npos) {
+		if (statString.substr(statString.find("$e"), 2).find("*") != string::npos) {
 			statString.erase(statString.find("*"), 1);
 			tempBool = true;
 		}
@@ -1063,7 +1064,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 		ratingMod *= HPContainerTypeMods[tempInt];
 	}
 	while (statString.find("$i") != string::npos) {
-		tempInt = rand() % 10;
+		tempInt = rand() % 25;
 		if (tempInt < 7) {
 			tempString = " " + hitConditions[tempInt];
 			ratingMod *= hitConditionMods[tempInt];
