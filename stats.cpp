@@ -941,7 +941,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 						statTemp = "Upon a successful backstab against a human target, you rapidly disguise as your victim\nSilent Killer: No attack noise from backstabs";
 						ratingBase = 8.75;
 					} else {
-						statTemp = "Disguises require (and consume) a full cloak meter"
+						statTemp = "Disguises require (and consume) a full cloak meter";
 						ratingBase = 12.5;
 					}
 					break;
