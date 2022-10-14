@@ -1,8 +1,8 @@
 #include "stats.hpp"
 //this is messy but probably temporary >.>
-int tempInt, mod, statCat, subStat;
+int tempInt, mod, statCat, subStat, bannerBuffTypeIndex;
 bool posNegSplit = false;
-const int statCatNum[6] = {28,15,5,10,7,18};
+const int statCatNum[9] = {11,16,4,10,7,18,0,0,4};
 const string damTypes[7] = {"bullet", "explosive", "fire", "critical", "ranged", "melee", "self"};
 const double damTypeRatings[7] = {4, 3.25, 2.5, 1.25, 4.5, .75, 4};
 const string critTypes[3] = {"critical hits", "mini-crits", "mini-crits and critical hits"};
@@ -30,7 +30,7 @@ const string hitConditions[7] = {
 const double hitConditionMods[7] = {.15, .35, .25, .45, .05, .188, .125};
 const string hitRewards[15] = {
 	"gain a speed boost",
-	"clip size increased",
+	"clip size increased (up to +$n*)",
 	"heal $n% of base health",
 	"$n health restored",
 	"a $z health pack is dropped",
@@ -42,21 +42,31 @@ const string hitRewards[15] = {
 	"target is engulfed in flames",
 	"100% chance to slow target",
 	"damage dealt is returned as ammo",
-	"victim loses up to $n% $t* charge",
-	"next shot fires $n% faster"
+	"victim loses up to $n*% $t* charge",
+	"next shot fires $n*% faster"
 };
-const double hitRewardRatings[15] = {2.5, 7.25, 3.75, 3.625, 145, 2.25, 0.75, 1.75, 1.75, 1.5, 5, 3.5, 35, 20, 2.5};
+const double hitRewardRatings[15] = {2.5, 7.5, 3.75, 3.625, 145, 2.25, 0.75, 1.75, 1.75, 1.5, 5, 3.5, 35, 20, 2.5};
 const string penalties[1] = {
 	"Hit yourself. Idiot.",
 };
+const string altFire[5] = {
+  "Launches a ball that $es opponents",
+  "Launches a festive ornament that shatters causing bleed", //it'd be stupid if it didnt cause bleed
+  "A charged shot that mini-crits players, sets them on fire and disables buildings for 4 sec",
+  "Launches a projectile-consuming energy ball.",
+	"Reach and shove someone!"
+  //"Charge toward your enemies and remove debuffs. Gain a critical melee strike after impacting an enemy.", // idk if this should be for all weapons so...
+
+};
+const double altFireRatings[5] = {1, 35, 75, 100, 10};
 const double penaltyRatings[1] = {50};
 const string wearerConditions[7] = {
 	"when fired at their back from close range",
-	"while health <50% of max",
 	"while health >50% of max",
+	"while health <50% of max"
 };
 const double wearerConditionMods[7] = {.75, .65, .35};
-const string classSpWearerConditions[9][7] = {
+const string classSpWearerConditions[9][3] = {
 	/*Scout*/{
 	"while airborne"
 	},/*Soldier*/{
@@ -74,14 +84,12 @@ const string classSpWearerConditions[9][7] = {
 	},/*Sniper*/{
 	"while scoped",
 	"while fully charged",
-	"while not fully charged",
-	"on bodyshot",
-	"on headshot"
+	"while not fully charged"
 	},/*Spy*/{
 	"while disguised",
 	"while cloaked"}
 };
-const double classSpWearerConditionMods[9][7] = {
+const double classSpWearerConditionMods[9][3] = {
 	/*Scout*/{1},
 	/*Soldier*/{1},
 	/*Pyro*/{1},
@@ -89,7 +97,7 @@ const double classSpWearerConditionMods[9][7] = {
 	/*Heavy*/{1},
 	/*Engineer*/{1},
 	/*Medic*/{1},
-	/*Sniper*/{1,1,1,1,1},
+	/*Sniper*/{1,1,1},
 	/*Spy*/{1,1}
 };
 const string statTypes[10] = {
@@ -104,7 +112,7 @@ const string statTypes[10] = {
 	"health from healers & packs",
 	"ammmo from boxes & dispensers"
 };
-const double statTypeRatings[10] = {5, 1.75, 4.25, 3.25, 1.875, 3, 1.125, .55, 12.5, 9.5};
+const double statTypeRatings[10] = {4.75, 1.75, 4.25, 3.25, 1.875, 3, 1.125, .55, 12.5, 9.5};
 const string posNegStringPair[10][2] = {
 	{"",""},
 	{"bonus", "penalty"},
@@ -131,10 +139,37 @@ const string debuffs[8] = {
 	"slow",
 	"wet",
 	"bleed",
-	"incoming $r*"
+	"incoming $r*",
+  "mark"
 };
+const double debuffRatings[8] = {25, 150, 10, 1, 35, 0, 15};
 const double debuffMods[8] = {0.85, 0.05, 0.35, 0.063, 0.5, 0.5};
-Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, string tfClass, bool whenActive, bool hasMeter, bool wearable, bool rapidFire) {
+const string coatEffects[4] = { //will make more soon? idk
+	"Players heal 60% of the damage done to coated enemies",
+	"Applies $e to coated enemies"
+	"Coated enemies take $r",
+	"Coated enemies take increased afterburn and afterburn ignores immunities"
+};
+const double coatRatings[4] = {50, 1, 1, 10};
+const string bannerBuffTypes[4] = {" special", "n offensive", " defensive", " movement"};
+const string meterBuildMethods[13] = {
+	"with damage dealt",
+	"with damage recieved",
+	"with damage dealt and recieved",
+	"with $d damage dealt",
+	"on $l kills and asssts",
+	//class specific (kinda self explanitory)
+	"while moving",
+	"while blast jumping",
+	"with teammates extinguished",
+	"while spun up",
+	"on sentry kills and assists",
+	"with teammates healed while below $n% health",
+	"on headshot kills",
+	"on buildings sapped"
+};
+const double meterBuildMethodRatings[13] = {25, 10, 40, 20, 20, 300, 50, 30, 50, 50, 4.825, 15, 35};
+Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, string realWepSlot, string tfClass, string ammoType, string meterName, bool whenActive, bool hasMeter, bool wearable, bool rapidFire, bool coatable, bool explosive, bool statFlagPass) {
 	//var assigment
 	posNegIndex = 0;
 	posNegSignIndex = -1;
@@ -170,7 +205,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 2:
 					if (mod > 0) {
-						if (wepSlot == "melee") {
+						if (realWepSlot == "melee" || wepType == "Cleaver") {
 							statTemp = "All players connected via Medigun beams are hit";
 							ratingBase = 3.25;
 							if (tfClass == "Spy") {
@@ -182,7 +217,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 							ratingBase = 6.5;
 						} else {
 							statTemp = "This weapon reloads its entire clip at once";
-							ratingBase = 25;	
+							ratingBase = 35;	
 						}
 					} else {
 						statTemp = "Wearer cannot carry the intelligence briefcase or PASS Time JACK";
@@ -191,7 +226,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 3:
 					if (mod > 0) {
-						if (wepSlot == "melee") {
+						if (realWepSlot == "melee") {
 							statTemp = "Damage removes Sappers";
 							if (tfClass == "Engineer") {
 								ratingBase = 0;
@@ -201,18 +236,17 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 						} else if (wearable == true) {
 							statTemp = "Immune to the effects of $e*";
 							ratingBase = 45;
-						} else {
-							statTemp = "Fires a wide, fixed shot pattern";
-					ratingBase = 1.25;
-						}
+						} else {}
 					} else {
-						if (wepSlot == "melee") {
-							statTemp = "Honorbound: Once drawn sheathing deals 50 damage to yourself unless it kills";
+						if (realWepSlot == "melee" || wepType == "Cleaver") {
+							statTemp = "Honorbound: Once drawn sheathing deals 50 damage to yourself unless it ";
+							if (wepType == "Cleaver" || mod > 15) {
+								statTemp += "hits";
+							} else {
+								statTemp += "kills";
+							}
 							ratingBase = 25;
-						} else {
-							statTemp = "Successive shots become less accurate";
-							ratingBase = 10;
-						}
+						} else {}
 					}
 					break;
 				case 4:
@@ -220,14 +254,14 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 						statTemp = "Increased knockback vs $c";
 						ratingBase = 1.25;
 					} else {
-						statTemp = "Increase in push force taken from damage and airblast";
-						ratingBase = 5;
+						statTemp = "You are marked for death while active, and for short period after switching weapons";
+						ratingBase = 35;
 					}
 					break;
 				case 5:
 					if (mod > 0) {
 						statTemp = "Primary Fire: Hits twice, its damage split between the two hits.";
-						ratingBase = 2.5;
+						ratingBase = 1.5;
 					} else {
 						statTemp = "Maximum health is drained while item is active";
 						tempInt = distance(weaponSlots, find(begin(weaponSlots), end(weaponSlots), wepSlot));
@@ -253,19 +287,19 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 6:
 					if (mod > 0) {
-						if (wepSlot == "melee") {
+						if (realWepSlot == "melee") {
 							statTemp = "The first hit will cause an explosion";
 						ratingBase = 35;
-						} else if (wearable == true) {
-							statTemp = "On Hit by Fire: Fireproof for 1 second and Afterburn immunity for 10 seconds before melting, regenerates in 15 seconds and by picking up ammo";
-							ratingBase = 25;
+						} else if (wepType == "Scattergun" || wepType == "Peppergun" || wepType == "Shotgun") {
+							statTemp = "Fires a wide, fixed shot pattern";
+							ratingBase = 1.25;
 						} else {
 							statTemp = "$r on headshot";
 							ratingMod *= .65;
 						}
 					} else {
-						statTemp = "You are marked for death while active, and for short period after switching weapons";
-						ratingBase = 35;
+						statTemp = "Successive shots become less accurate";
+						ratingBase = 10;
 					}
 					break;
 				case 7:
@@ -279,7 +313,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 8:
 					if (mod > 0) {
-						if (wepSlot == "melee") {
+						if (realWepSlot == "melee") {
 							statTemp = "Third successful hit in a row always crits.";
 							ratingBase = 10;
 						} else if (wearable == true) {
@@ -289,31 +323,35 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 							statTemp = "No reload necessary";
 							ratingBase = 50;
 						}
-					} else {
-						statTemp = "Kill turns victim to ice\nMelts in fire, regenerates in 15 seconds and by picking up ammo";
-						switch(tempInt) {
-							case 0:
-								ratingBase = 250;
-								break;
-							case 1:
-								ratingBase = 125;
-								break;
-							case 2:
-								ratingBase = 50;
-								break;
-							default:
-								ratingBase = 25;
-								break;
-						}
-					}
+					} else {}
 					break;
 				case 9:
 					if (mod > 0) {
-						statTemp = "This weapon automatically reloads while not active";
+						if (realWepSlot == "melee" || wearable == true) {
+							statTemp = "On Hit by Fire: Fireproof for 1 second and Afterburn immunity for 10 seconds";
+							ratingBase = 25;
+						} else {
+							statTemp = "This weapon automatically reloads while not active";
 						ratingBase = 15;
+						}
 					} else {
-						statTemp = "This weapon fires tracer rounds";
+						if (realWepSlot == "melee" || wearable == true) {	
+							statTemp = "";
+							ratingBase = 0;
+							if (realWepSlot == "melee") {
+								statTemp = "Kill turns victim to ice\n";
+								if (tfClass == "Spy") {
+									ratingBase += 15;
+								} else {
+									ratingBase += 1.5;
+								}
+							}
+							statTemp += "Melts in fire, regenerates in 15 seconds and by picking up ammo";
+							ratingBase += 50;
+						} else {
+							statTemp = "This weapon fires tracer rounds";
 						ratingBase = 5;
+						}
 					};
 					break;
 				case 10:
@@ -327,7 +365,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 11:
 					if (mod > 0) {		
-						if (wepSlot == "melee") {
+						if (realWepSlot == "melee") {
 							statTemp = "This weapon has a large melee range and deploys and holsters slower";
 							ratingBase = 0.125;
 						} else if (wearable == true) {
@@ -355,7 +393,6 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 1:
 				//conditional damage bonus / penalty
-					cout << "\n\n\nWOW\n\n\n\n";
 					statTemp = "$n% damage $a vs $c";
 					posNegIndex = 1;
 					ratingBase = 3.5;
@@ -372,7 +409,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					if (mod < 0) {
 						statTemp = "No random critcal hits";
 						ratingBase = 15;
-						if (wepSlot == "melee") {
+						if (realWepSlot == "melee") {
 							ratingBase = 25;
 						}
 					} else {
@@ -408,12 +445,13 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					}
 					break;
 				case 8:
-					statTemp = "$n% bullets per shot";
+					statTemp = "$n% $ys per shot";
 					ratingBase = 4.5;
 					break;
 				case 9:
 					statTemp = "$n% $a reload time";
 					posNegIndex = 6;
+					posNegSignIndex = 2;
 					ratingBase = 3.25;
 					break;
 				case 10:
@@ -440,20 +478,23 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 				case 12:
 					//equalizer / esc plan incremental stat increase / decrease type thing
 					statTemp = "$s $as as the user becomes injured";
-				ratingMod = .625;
-				}
+  				ratingMod = .625;
+          posNegIndex = 7;
+				  break;
 				case 13:
 					posNegSplit = true;
 					cout << "subStat = " << subStat << "; mod = " << mod << endl;
 					if (mod > 0) {
 						if (wearable == true) {
 							statTemp = "On $l Hit$i: $o";
-						} else {
+							} else if (coatable == true) {
+  							statTemp = "On Hit Coated Player: $o";
+							} else {
 							statTemp = "On Hit$i: $o";
 						}
 					} else {
 						statTemp = "On Miss: Hit yourself. Idiot";
-						if (wepSlot != "melee") {
+						if (realWepSlot != "melee") {
 							ratingBase = 150;
 						} else {
 							ratingBase = 50;	
@@ -461,13 +502,33 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					}
 					break;
 				case 14:
-					if (wearable == true) {
-							statTemp = "On $l Kill: $o";
-						} else {
-							statTemp = "On Kill: $o";
-						}
-					ratingMod *= .65;
-			break;
+          if (mod > 0) {
+  					if (wearable == true) {
+  							statTemp = "On $l Kill: $o";
+  						} else if (coatable == true) {
+  							statTemp = "On Kill Coated Player: $o";
+							} else {
+  							statTemp = "On Kill$i: $o";
+  						}
+            tempBool = true;
+  					ratingMod *= .65;
+          }
+          break;
+        case 15:
+          if (mod > 0) {
+            statTemp = "Alt Fire: $f";
+          }
+          break;
+				case 16:
+					if (mod > 0) {
+						statTemp = "Hold Fire to load up to $n* $ys\nRelease Fire to fire all loaded $ys";
+					} else if (statFlagPass == true) {
+						statTemp = "Overloading the chamber will cause a misfire";
+						ratingBase = 2.5;
+					}
+				break;
+      }
+      break;
 		case 2:
 			type = defense;
 			switch(subStat){
@@ -487,11 +548,14 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 				case 2:
 					//max HP
 					statTemp = "$n max health $w";
-					tempInt = rand() % 8;
-					if (tempInt < 5) {
+					tempInt = rand() % 9 + 2 * mod / abs(mod);
+					if (tempInt < 8 && mod > 3) {
 						mod = round(mod/2); //for less of a chance of insane health 
 					}
 					ratingBase = 7.75;
+          if (mod < 0) {
+            ratingBase = 12.5;
+          }
 					break;
 				case 3:
 					//max OVH
@@ -500,11 +564,11 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 4:
 					//HP regen (medic-like)
-					statTemp = "$n health $a per second $w";
+					statTemp = "Up to $n health $a per second $w";
 					ratingBase = 7;
 					posNegIndex = 5;
 					tempInt = mod;
-					mod %= 12; 
+					mod %= 12 + mod / abs(mod); 
 					numInterval = 1;
 					if (mod == 0) {
 						mod = tempInt / abs(tempInt);
@@ -520,10 +584,10 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 			switch(subStat) {
 				case 0:
 					statTemp = "$n% movement speed $w";
-					mod %= 10;
-					ratingBase = 2.25;
+					mod %= 9 + 2 * mod / abs(mod);
+					ratingBase = 2.625;
 					if (mod < 0) {
-						ratingBase = 3.125;
+						ratingBase = 3.375;
 					}
 					break;
 				case 1:
@@ -560,8 +624,8 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 7:
 					statTemp = "$n jumps while deployed";
-					tempInt == mod;
-					mod %= 5;
+					tempInt = mod;
+					mod %= 4 + 2 * mod / abs(mod);
 					if (mod < 0 and tfClass == "Scout") {
 						mod = round(mod/10);
 					} else if (mod < 0 && tfClass != "Scout"){
@@ -572,7 +636,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					if (mod == 0) {
 						mod = tempInt / abs(tempInt);
 					}
-					if (abs(mod) == 1) {
+					if (mod == 1 || tfClass == "Scout" && mod == -1) {
 						statTemp.erase(7,1);
 					}
 					numInterval = 1;
@@ -590,12 +654,13 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					statTemp = "+$n capture rate $w";
 						posNegSignIndex = 2;
 						ratingBase = 75;
-						mod %= 4;
+						mod %= 3 + 2 * mod / abs(mod);
 						numInterval = 1;
 					} else {
 						statTemp = "Wearer cannot capture control points or push the payload cart";
 						ratingBase = 175;
 					}
+				break;
 			}
 			break;
 		case 4:
@@ -609,7 +674,11 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					posNegSplit = true;
 					if (mod > 0) {
 						statTemp = "Projectile penetrates enemy targets";
-						ratingBase = 25;
+						if (explosive == true) {
+							ratingBase = 1.5;
+						} else {
+							ratingBase = 25;
+						}
 					} else {
 						tempString = "+$n degrees random projectile deviation";
 						posNegSignIndex = 2;
@@ -620,11 +689,14 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 2:
 					posNegSplit = true;
-					if (mod > 0) {} else {
+					if (mod > 0) {
 						statTemp = "Projectile cannot be deflected";
-						//if explosive ratingBase = 50; else
-						ratingBase = 15;
-					}
+						if (explosive == true) {
+							ratingBase = 50; 
+						} else {	
+							ratingBase = 15;
+						} 
+					} else {}
 				case 4:
 					statTemp = "$n% blast radius";
 					ratingBase = 4.875;
@@ -639,7 +711,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 7:
 					statTemp = "$n% self damage force";
-					if (tfClass == "Soldier" && wepSlot == "Rocket Launcher") {
+					if (tfClass == "Soldier" && wepType == "Rocket Launcher") {
 						ratingBase = 7.5;
 					} else if (tfClass == "Demoman" && wepType == "Stickybomb Launcher") {
 						ratingBase = 5.5;
@@ -658,10 +730,11 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					}
 				case 9:
 					if (mod > 0) {
-						statTemp = "$p have a fuse time of 1 second; fuses can be primed to explode earlier by holding down the fire key.\nCannonballs push players back on impact\nDouble Donk! Explosions after a $p impact will deal mini-crits to impact victims.\nCannonballs do not explode on impact";
+						statTemp = "$ys have a fuse time of 1 second; fuses can be primed to explode earlier by holding down the fire key.\n$ys push players back on impact\nDouble Donk! Explosions after a $ys impact will deal mini-crits to impact victims.";
 						ratingBase = 50;
-					} else {
-						
+					} else if (statFlagPass == true) {
+						statTemp = "$ys do not explode on impact";
+						ratingBase = 7.5;
 					}
 			}
 			break;
@@ -690,7 +763,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					statTemp = "$n% airblast cost";
 					mod *= -1;
 					ratingBase = -1.875;
-					if (mod < 0) {
+					if (mod > 0) {
 						mod *= 2;
 						ratingBase *= 2.125;
 					}
@@ -698,7 +771,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 				case 3:
 					statTemp = "$n% afterburn damage $a";
 					posNegIndex = 1;
-					mod %= 4;
+					mod %= 4 + mod / abs(mod);
 					numInterval = 25; //afterburn does 4 damage
 					break;
 				case 4:
@@ -706,6 +779,8 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					if (mod > 15) {
 						statTemp = "Full turning control while charging";
 						ratingBase = 75;
+					} else if (mod < 0) {
+						statTemp = "No turning control while charging";
 					} else {
 						ratingBase = 1;
 						posNegIndex = 5;
@@ -715,11 +790,12 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 				case 5:
 					statTemp = "$n max stickybombs out";
-					if (mod < 0) {
-						mod %= 3;
-					} else {
+					if (mod > 0) {
 						mod %= 10;
+					} else {
+						mod %= 6;
 					}
+					mod++;
 					numInterval = 2;
 					ratingBase = 10;
 					break;
@@ -727,9 +803,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					if (mod < 0) {
 						statTemp = "Detonates stickybombs near the crosshair and directly under your feet";
 						ratingBase = 5;
-					} else {
-						
-					}
+					} else {}
 					break;
 				case 7:
 					if (mod < 0) {
@@ -743,7 +817,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					statTemp = "0.$n sec $a bomb arm time";
 					posNegIndex = 6;
 					posNegSignIndex = 2;
-					mod %= 10;
+					mod %= 10 + mod / abs(mod);
 					if (abs(mod) == 10) {
 						tempString = "1 sec $a bomb arm time";
 					}
@@ -769,7 +843,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 						statTemp = "$n% increase in charge impact damage with each head taken while the eyelander is equipped"; //hidden splendid stat but...
 						posNegIndex = 2;
 						ratingBase = 2.5;
-						mod %= 10;
+						mod %= 10 + 2 * mod / abs(mod);
 					} else {
 						statTemp = "Taking damage while shield charging reduces remaining charging time";
 						ratingBase = 25;
@@ -784,7 +858,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					statTemp = "0.$n sec $a in charge duration";
 					posNegIndex = 7;
 					posNegSignIndex = 2;
-					mod %= 10;
+					mod %= 10 + mod / abs(mod);
 					if (abs(mod) == 10) {
 						tempString = "1 sec $a in charge duration";
 					}
@@ -806,7 +880,12 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 				case 17:
 					posNegSplit = true;
 					if (mod > 0) {
-						statTemp = "Creates a ring of flames while spun up";
+						statTemp = "Creates a ring of flames while ";
+            if (wepType == "Minigun") {
+              statTemp += "spun up";
+            } else {
+              statTemp += "firing";
+            }
 						ratingBase = 5;
 					} else {
 						statTemp = "Consumes an additional $n ammo per second while spun up";
@@ -931,6 +1010,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					if (mod > 0) {
 						statTemp = "On Backstab: $o";
 						ratingMod *= 0.25;
+            tempBool = true;
 					} else {
 						statTemp = "No cloak meter from ammo boxes when invisible";
 						ratingBase = 4.5;
@@ -946,8 +1026,116 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 						ratingBase = 12.5;
 					}
 					break;
+				//past this point the stats arent sorted by class (If I did re-sort stats I'd have to recheck the blacklist and it'd be a pain) I might re-sort them when v.1.0 comes out with the UI and everything.
 			}	
-		}
+      break;
+    case 8:
+			cout << "\n\nCASE 8\n\n\n";
+      type = special;
+      switch (subStat) {
+				case 0:	
+				cout << "Lunchbox\n";
+				//how much hp
+		      mod *= 10;
+		      mod %= 28; //0 is possible
+		      if (mod > 3) {
+		        mod -= 3;
+		        if (mod > 20) { //20 is more likely
+		          mod = 20;
+		        }
+		        statTemp = "Eat to regain up to" + to_string(mod * 15) + "health."; //no '%' and use of '$' flags is intentional
+		      }
+		    //effect
+		      if (mod < 10) {
+		        mod *= rand(); //attempt to re-randomize lol
+		        mod %= 15 + 6; //min of 5
+		        if (mod > 10) {
+		           statTemp = "After consuming, increased $s for $n seconds"; 
+		        } else {
+		           statTemp = "After consuming, increased $s and $s for $n seconds"; 
+		        }
+		      }
+					break;
+				case 1: //shield
+				cout << "Shield\n";
+					mod *= 10;
+					mod %= 77;
+					posNegSignIndex = 2;
+					if (mod < 40) { //rare bullet damage
+						tempInt = mod % 10 * 5 + 1;
+						tempInt = round(tempInt / 3);
+						statTemp = to_string(tempInt) + "% bullet damage resistance $w\n";	
+						ratingBase += 4;
+					}
+					tempInt = mod % 12 * 5 + 4;
+					tempInt = round(tempInt / 1.5);
+					statTemp = to_string(tempInt) + "% explosive damage resistance $w\n";
+					ratingBase += 3.5;
+					tempInt = mod * 5 + 4;
+					statTemp = to_string(tempInt) + "% fire damage resistance $w";
+					ratingBase += 2.5;
+					break;
+				case 2: //coatables
+				cout << "coatable\n";
+					tempInt = rand() % 2;
+					statTemp = coatEffects[tempInt];
+					ratingBonus = coatRatings[tempInt];
+					if (tempInt == 2 || tempInt == 3) {
+						ratingMod *= 0.35;
+					}
+					if (mod > 2 && tfClass != "Pyro") {
+						statTemp += "\nCan be used to extinguish fires\nExtinguishing teammates reduces cooldown by -n%";
+						posNegSignIndex = 2;
+						ratingBase = 1.25;
+					}	
+					break;
+				case 3: //banners
+					statTemp = "Provides a" + bannerBuffTypes[bannerBuffTypeIndex] + " buff for nearby teammates\n";
+					if (mod > 10) {
+						statTemp += "Build Rage with damage done and / or taken";
+					} else {
+						statTemp += "Build Rage with damage done.";
+					}
+					statTemp += "\nWhile the buff is active, all nearby teammates recieve:";
+					break;
+				case 4: //meters
+					tempBool = false;
+					if (mod > 0) {
+						statTemp = "Build $t ";
+						tempInt = rand() % 6;
+						if (tempInt == 6) {
+							tempInt += distance(begin(classList), find(begin(classList), end(classList), tfClass));
+							if (tfClass == "Demo") {
+								tempInt -= 2;
+							}
+						}
+						tempString = meterBuildMethods[tempInt];
+						statTemp += tempString + " (Meter fills at ";
+						tempInt = ratingBase * (21 - mod);
+						ratingBase = meterBuildMethodRatings[tempInt];
+						if (statTemp.substr(0,6).find("on") != string::npos) {
+							tempInt = round(tempInt / 8);
+							tempBool = true;
+						}
+						if (statTemp.substr(0,6).find("with") != string::npos || 
+							tempBool == true) {
+							statTemp += to_string(tempInt) + " " + tempString.substr(tempString.find(" "));
+							if (statTemp.find("and") != string::npos) {
+								statTemp.insert(statTemp.find("and"), to_string(round(tempInt / 1.75)));
+							} else if (statTemp.find("while", 16) != string::npos) {
+								statTemp.erase(statTemp.find("while", 16), string::npos);
+							}
+						} else if (statTemp.substr(0,6).find("while") != string::npos) {
+							tempInt = round(tempInt / 2);
+						} 
+					} else if (statFlagPass == true) {
+						statFlagPass = false;
+					}
+					break;
+				case 5: //counter (heads, etc)
+					break;
+			}
+		} 
 	statString = statTemp; //copy template to main string 
 	if (mod > 0) {
 			upside = 0;
@@ -958,20 +1146,22 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 		posNegSignIndex = upside;
 	} //on hit rewards
 	while (statString.find("$o") != string::npos) {
-		if (tempBool == false) {
-			tempInt = rand() % 15;
-			while (hasMeter == false && tempInt == 5) {
-				tempInt += rand() % 15 - 4;
+		tempInt = rand() % 15;
+		do {	
+			while (realWepSlot == "melee" && tempInt == 1) {
+				tempInt += rand() % 15 - 1;
 			}
-			while (wepSlot == "melee" && tempInt == 1) {
-				tempInt += rand() % 15 - 2;
+	    while (hasMeter == false && tempInt == 5) {
+					tempInt += rand() % 15 - 5;
 			}
-		} else if (tempBool == false && hasMeter == true) {
-			tempInt = rand() % 6;
-		} else {
-			tempInt = rand() % 5;
-		}
-		tempInt = abs(tempInt);
+			while (hasMeter == false && tempInt == 6) {
+				tempInt += rand() % 15 - 6;
+			}
+	    if (tempInt == 1) {
+	      mod %= 10 + 3;
+	    }
+			tempInt = abs(tempInt);
+			} while (tempBool == true && tempInt > 6);
 		statString.replace(statString.find("$o"), 2, hitRewards[tempInt]);
 		ratingBase *= hitRewardRatings[tempInt];
 		if (rapidFire == true) {
@@ -993,7 +1183,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					ratingMod = 0.7;
 				}
 			case 4: //slowed
-				if (tfClass == "Scout" && wepSlot == "melee") {
+				if (tfClass == "Scout" && realWepSlot == "melee") {
 					ratingMod = 0.55;
 				}
 			case 5: //bleeding
@@ -1014,7 +1204,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 				}
 				break;
 			case 4: //slowed
-				if (tfClass == "Scout" && wepSlot == "melee") {
+				if (tfClass == "Scout" && realWepSlot == "melee") {
 					ratingMod = 0.55;
 				}
 				break;
@@ -1037,8 +1227,10 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 		}
 	}
 	while (statString.find("$d") != string::npos) {
-		if (tfClass == "Soldier" && wepSlot == "primary"|| tfClass == "Pyro" && wepType == "Flare Gun" || tfClass == "Demo" && wepSlot != "melee") {
+		if (tfClass == "Soldier" && realWepSlot == "primary"|| tfClass == "Pyro" && wepType == "Flare Gun" || tfClass == "Demo" && realWepSlot != "melee") {
 			tempInt = rand() % 7;
+		} else if (wepType == "Shield") {			
+			tempInt = rand() % 3 + 3;
 		} else {
 			tempInt = rand() % 6;
 		} 
@@ -1048,15 +1240,32 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 	while (statString.find("$e") != string::npos) {
 		if (statString.substr(statString.find("$e"), 2).find("*") != string::npos) {
 			statString.erase(statString.find("*"), 1);
-			tempBool = true;
-		}
-		if (tempBool == true) {
 			tempInt = rand() % 6;
 		} else {
-			tempInt = rand() % 5;
+      tempInt = rand() % 5;
+    }
+		if (tempBool == true) {
+      ratingBase = debuffRatings[tempInt];
+			tempInt = rand() % 6;
+      if (tempInt > 5) {
+        tempInt++;
+      }
+		} else {
+			ratingMod *= debuffMods[tempInt];
 		}
 		statString.replace(statString.find("$e"), 2, debuffs[tempInt]);
-		ratingMod *= debuffMods[tempInt];
+	}
+  while (statString.find("$f") != string::npos) {
+		tempInt = rand() % 5;
+		statString.replace(statString.find("$f"), 2, altFire[tempInt]);
+		ratingBase = altFireRatings[tempInt];
+    if (realWepSlot != "melee" && tempInt < 4) {
+      statString += "(consumes $n% of the clip)";
+      mod %= 4 + mod / abs(mod);
+      numInterval = 25;
+      posNegSignIndex = 2;
+      ratingMod *= 0.1;
+    }
 	}
 	while (statString.find("$h") != string::npos) {
 		tempInt = rand() % 4;
@@ -1064,8 +1273,8 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 		ratingMod *= HPContainerTypeMods[tempInt];
 	}
 	while (statString.find("$i") != string::npos) {
-		tempInt = rand() % 25;
-		if (tempInt < 7) {
+		tempInt = rand() % 35;
+		if (tempInt <= 7) {
 			tempString = " " + hitConditions[tempInt];
 			ratingMod *= hitConditionMods[tempInt];
 		} else {
@@ -1081,8 +1290,8 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 		ratingMod *= ammoContainerTypeMods[tempInt]; 
 	}
 	while (statString.find("$l") != string::npos) {
-		if (wepSlot != "melee" && wearable == false) {
-			statString.replace(statString.find("$l"), 2, wepSlot);
+		if (realWepSlot != "melee" && wearable == false) {
+			statString.replace(statString.find("$l"), 2, realWepSlot);
 		} else {
 			tempInt = 3;
 			if (tempBool == true) {
@@ -1090,7 +1299,7 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 			}
 			do {
 				tempString = weaponSlots[rand() % tempInt];	
-			}	while (tempString == wepSlot && wearable == true); 
+			}	while (tempString == realWepSlot && wearable == true); 
 			statString.replace(statString.find("$l"), 2, tempString);
 		} 
 	}
@@ -1108,7 +1317,11 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 		ratingBase *= critTypeRatings[tempInt];
 	}
 	while (statString.find("$s") != string::npos) {
-		tempInt = rand() % 10;
+		if (wepType == "Lunchbox") {
+      tempInt = rand() % 12;
+    } else {      
+      tempInt = rand() % 10;
+    }
 		if (wearable == true) {
 			tempInt %= 3;
 			switch (tempInt) {
@@ -1123,43 +1336,75 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 					break;
 			}
 		}
-		statString.replace(statString.find("$s"), 2, statTypes[tempInt]);
-		ratingBase *= statTypeRatings[tempInt];
+    if (tempInt < 11) {
+      tempString = statTypes[tempInt];
+      ratingBase *= statTypeRatings[tempInt];
+    } else if (tempInt == 11) {
+      tempString = "+$n* max health";
+      ratingBase *= 5;
+    } else {
+      tempString = "attacks $r";
+    }
+		statString.replace(statString.find("$s"), 2, tempString);
 	}
 	while (statString.find("$t") != string::npos) {
-		tempInt = distance(begin(meterWeapons), find(begin(meterWeapons), end(meterWeapons), wepType));
-		if (tempInt == distance(begin(meterWeapons), end(meterWeapons))) {
-			tempInt = rand() % 10;
-		} 
-		statString.replace(statString.find("$t"), 2, meterNames[tempInt]);
-		if (statString.find("*") != string::npos) {
+		if (statString.substr(statString.find("$t"),2).find("*") != string::npos) {
 			statString.erase(statString.find("*"), 1);
 			tempBool = true;
 		}
+		if (hasMeter == false || tempBool == true) {
+			tempInt = rand() % 10;
+			tempString = meterNames[tempInt];
+		} else {
+			tempString = meterName;
+		}
+		statString.replace(statString.find("$t"), 2, tempString);
 		if (tempBool == true) {
 			ratingMod *= meterMods[tempInt];
 		}
 	}
 	while (statString.find("$w") != string::npos) {
-		statString.replace(statString.find("$w"), 2, "on wearer");
-		if (whenActive == true) {
-			tempInt = distance(weaponSlots, find(begin(weaponSlots), end(weaponSlots), wepSlot));
-			switch(tempInt) {
-				case 0:
-					ratingMod *= .8;
-					break;
-				case 1:
-					ratingMod *= .45;
-					break;
-				case 2:
-					ratingMod *= .2;
-					break;
-				default:
-					ratingMod *= .1;
-					break;
+    if (wepType == "Lunchbox") {
+      if (mod > 0) {
+        statString = "User has " + statString;
+        tempString = "during this time"; 
+      } else {
+        tempString = "when the effect ends";
+      }
+    } else if (coatable == true && mod > 0) {
+      statString = "Enemy has " + statString;
+			tempString = posNegStringPair[posNegIndex][0];
+			if (posNegIndex != 0 && statString.find(tempString) != string::npos) { //positive stat to negative (for enemy)
+				statString.replace(statString.find(tempString), tempString.length(), posNegStringPair[posNegIndex][1]);
 			}
-		}
+			tempString = "while coated"; //hope this works lol
+		} else if (wepType == "Battle Banner") {
+			tempString = "";
+		} else {
+  		tempString = "on wearer";
+  		if (whenActive == true) {
+  			tempInt = distance(weaponSlots, find(begin(weaponSlots), end(weaponSlots), wepSlot));
+  			switch(tempInt) {
+  				case 0:
+  					ratingMod *= .95;
+  					break;
+  				case 1:
+  					ratingMod *= .65;
+  					break;
+  				case 2:
+  					ratingMod *= .45;
+  					break;
+  				default:
+  					ratingMod *= .25;
+  					break;
+  			}
+  		}
+    }
+		statString.replace(statString.find("$w"), 2, tempString);
 	}	
+	while (statString.find("$y") != string::npos) {
+		statString.replace(statString.find("$y"), 2, ammoType);
+	}
 	while (statString.find("$z") != string::npos) {
 		tempInt = rand() % 2;
 		statString.replace(statString.find("$z"), 2, sizes[tempInt]);
@@ -1180,14 +1425,26 @@ Stat::Stat(int mod, int statCat, int subStat, string wepType, string wepSlot, st
 				numInterval = 1;
 			}
 			cout << numInterval << endl;
-			tempInt += 1;
+			statString.erase(statString.find("*"), 1);
 			posNegSignIndex = 2;
 		}
-		statString.replace(statString.find("$n"), tempInt, posNegSign[posNegSignIndex] + to_string(abs(mod*numInterval)));
+  if (statString.find("%") != string::npos) {
+			if (mod * numInterval == 35) {
+        mod = 33;
+        numInterval = 1;
+        ratingMod *= 0.2;
+      } else if (mod * numInterval == 65) {
+        mod = 66;
+        numInterval = 1;
+        ratingMod *= 0.2;
+      }
+		}
+		statString.replace(statString.find("$n"), 2, posNegSign[posNegSignIndex] + to_string(abs(mod*numInterval)));
 	} else {
 		mod /= abs(mod);
 	}
-	rating = (ratingBonus + ratingBase * mod) * ratingMod;
+  statString[0] = toupper(statString[0]);
+	rating = (ratingBase * mod + ratingBonus) * ratingMod;
 	cout << "/(mod = " << mod << "; ratingBase = " << ratingBase << "; ratingMod = " << ratingMod << "; ratingBonus = " << ratingBonus << ";\n rating = " << rating << ")\\...";
 }
 //1.35 hp on hit mult

@@ -1,5 +1,22 @@
 #include "data.hpp"
 double version = 0.2;
+int subVersion = 2; //0.2.2
+string versionFull = to_string(version) + "." + to_string(subVersion);
+string lineBreak(string ref, bool firstNL, bool secNL) {
+	string lb;
+	if (firstNL == true) {
+		lb += "\n";
+	}
+	lb += ">";
+	for (int i = 0; i < ref.length() - 2; i++) {
+		lb += "=";
+	}
+	lb += "<";
+	if (secNL == true) {
+		lb += "\n";
+	}
+	return lb;
+};
 const string weaponList[68] = {
 	"Scattergun",
 	"Peppergun",
@@ -82,7 +99,7 @@ const string classList[10] = {
 	"Spy",
 	"Multi"
 };
-const string classWeapons[10][15] = {
+const string classWeapons[10][14] = { //note: placeholder is redundant because an unassigned element in an array will still be indexable / returnable and can be used as a reference. (This isn't storage effecient but the alternative method would be tedious)
 	/*Scout*/{
 		"Scattergun",
 		"Peppergun",
@@ -94,8 +111,7 @@ const string classWeapons[10][15] = {
 		"Severed Arm",
 		"Sword",
 		"RIFT Fire Mace",
-		"Gunbai",
-		"Placeholder"
+		"Gunbai"
 	},/*Soldier*/{
 		"Rocket Launcher",
 		"Battle Banner",
@@ -104,8 +120,7 @@ const string classWeapons[10][15] = {
 		"Shovel",
 		"Pickaxe",
 		"Katana",
-		"Riding Crop",
-		"Placeholder"
+		"Riding Crop"
 	},/*Pyro*/{
 		"Flame Thrower",
 		"Flame Launcher",
@@ -119,8 +134,7 @@ const string classWeapons[10][15] = {
 		"Neon Sign",
 		"Rubber Glove",
 		"Rake",
-		"RIFT Fire Axe",
-		"Placeholder"
+		"RIFT Fire Axe"
 	},/*Demoman*/{
 		"Grenade Launcher",
 		"Boots*",
@@ -130,16 +144,14 @@ const string classWeapons[10][15] = {
 		"Sword*",
 		"Bottle",
 		"Golf Club",
-		"Caber Grenade",
-		"Placeholder"
+		"Caber Grenade"
 	},/*Heavy*/{
 		"Minigun",
 		"*Shotgun" //heavy specific shotgun b/c why not
 		"Lunchbox", //heavy specific lunchbox
 		"Fists",
 		"Boxing Gloves",
-		"Mittens",
-		"Placeholder"
+		"Mittens"
 	},/*Engineer*/{
 		"Shotgun*",
 		"Pistol",
@@ -148,35 +160,30 @@ const string classWeapons[10][15] = {
 		"Robot Arm",
 		"Construction PDA",
 		"Destruction PDA"
-		"Placeholder"
 	},/*Sniper*/{
 		"Sniper Rifle",
 		"Bow",
-		"Sheild*",
+		"Shield*",
 		"SMG",
-		"Jar",
+		"Jar-Based Karate",
 		"Backpack",
-		"Kukri",
-		"Placeholder"
+		"Kukri"
 	},/*Medic*/{
 		"Syringe Gun",
 		"Crossbow",
 		"Medigun",
 		"Bonesaw",
-		"Statue Head",
-		"Placeholder"
+		"Statue Head"
 	},/*Spy*/{
 		"Revolver",
 		"Sapper",
 		"Knife",
 		"Disguise Kit",
 		"Invis Watch"
-		"Placeholder"
 	},/*Multiclass*/{
 		"Shotgun", //shotgun for soldier, pyro, heavy, & engie
 		//"Shot*gun", // shotgun for soldier & pyro
-		"Pistol",
-		"Placeholder"
+		"Pistol"
 	}
 }; //need placeholder b/c of find
 const string weaponSlots[5] = {
@@ -193,22 +200,20 @@ const string wearables[7] = {
 	"Battle Banner",
 	"Jetpack",
 	"Shield",
-	"Backpack",
-	"Placeholder"
+	"Backpack"
 };
 const double wearBoost[6] = {
-	15,
 	35,
-	15,
+	45,
+	50,
 	10,
 	75,
-	15
+	25
 };
 const string alreadyBad[4] = {
 	"*Shotgun",
 	"Syringe Gun",
-	"Gas Canister",
-	"Placeholder"
+	"Gas Canister"
 };
 const double howBad[3] = {
 	5,
@@ -227,8 +232,7 @@ const string projectileBased[13] = {
 	"Rocket Launcher",
 	"Grenade Launcher",
 	"Stickybomb Launcher",
-	"Flare Gun",
-	"Placeholder"
+	"Flare Gun"
 };
 const string meterWeapons[14] = {
 	"Cleaver",
@@ -242,11 +246,10 @@ const string meterWeapons[14] = {
 	"Lunchbox",
 	"Sniper Rifle",
 	"Jar-Based Karate",
-	"Backpack",
 	"Medigun",
 	"Invis Watch"
 };
-const string meterNames[14] = {
+const string meterNames[14] = { //exsisting names for weapon types
 	"Cleaver",
 	"Drink",
 	"Jar",
@@ -254,20 +257,41 @@ const string meterNames[14] = {
 	"Jetpack",
 	"Gas",
 	"charge",
-	"Charge",
+	"charge",
 	"Food",
 	"charge",
 	"Jar",
-	"recharge",
 	"ÜberCharge",
-	"cloak"
+	"cloak",
+	"recharge"
 }; 
-const string moreMeterNames[4] = { //exsisting names that arent exclusive to a weapon type (Soda Popper is a scattergun with hype; not all scatterguns have a meter though)
-	"Hype",
-	"Boost",
-	"Jar",
-	"Focus"
+const string classMeterNames[9][3] = { //meter names that aren't weapon-type specific (will be used for added meters)
+	/*Scout*/{"Hype", "Boost"},
+	/*Soldier*/{"Rage"},
+	/*Pyro*/{"Mmph"},
+	/*Demo*/{"Scrumpy"}, //custom, reason obvious.	
+	/*Heavy*/{"Rage"}, //from mvm
+	/*Engi*/{"God"}, //also custom; reference to god complex... maybe too obscure? Do ppl know about that?	
+	/*Medic*/{"Herzinfall"}, /*or 'Herzinfarkt' german for heart attack.. I think? I looked it up, so it might be wrong...
+I could also use Kardiotomie which means cardiomoty, or an incision in the heart, but I kinda think heart attack is clever... and it sounds cool so idk*/
+	/*Sniper*/{"Focus", "Crikey"},
+	/*Spy*/{"cloak"} //should not be accessable lol
 }; 
+const string altFireWeapons[14] = {
+	"Flame Thrower",
+	"Flame Launcher",
+	"Minigun",
+	"Sniper Rifle",
+	"Bow",
+	"Stickybomb Launcher",
+	"Shield",
+	"Lunchbox",
+	"Laser Pointer",
+	"Medigun",
+	"Fists",
+	"Boxing Gloves",
+	"Mittens"
+};
 const string cliplessWeapons[9] = {
 	"Flamethrower",
 	"Minigun",
@@ -276,8 +300,7 @@ const string cliplessWeapons[9] = {
 	"Flare Gun",
 	"Laser Pointer",
 	"Medigun",
-	"Sapper",
-	"Placeholder"
+	"Sapper"
 };
 const string rapidFireWeapons[8] = {
 	"Flame Thrower",
@@ -286,19 +309,49 @@ const string rapidFireWeapons[8] = {
 	"Pistol",
 	"SMG",
 	"Medigun",
-	"Sapper",
-	"Placeholder"
+	"Sapper"
 };
-const string primaryLike[5] {
+const string primaryLike[6] {
 	"Stickybomb Launcher",
 	"*Shotgun",
 	"Medigun",
 	"Wrench",
 	"Knife"
 };
-const string secondaryLike[4] {
-	"Shotgun*",
+const string secondaryLike[5] {
+	"Shotgun",
 	"Syringe Gun",
 	"Crossbow",
 	"Revolver"
+};
+const string throwableWeapons[7] { //first 3 are coatables; throwable also means consumable; basically something you don't always have;
+	"Non-Milk Substance",
+	"Gas Canister",
+	"Jar-Based Karate",
+	"Cleaver",
+	"Lunchbox",
+	"Lunchbox*"
+};
+
+const string ammoTypes[10] {
+	"pellet",
+	"rocket",
+	"fire cloud",
+	"grenade",
+	"cannonball",
+	"arrow",
+	"syringe",
+	"flare",
+	"stickybomb",
+	"bullet"
+};
+const string weaponAmmoGroups[9][5] {
+	/*pellet*/{"Scattergun", "Peppergun", "Shotgun"},
+	/*rocket*/{"Rocket Launcher"},
+	/*fire cloud*/{"Flame Launcher"},
+	/*grenade*/{"Grenade Launcher"},
+	/*arrow*/{"Bow"},
+	/*syringe*/{"Syringe Gun", "Crossbow"},
+	/*flare*/{"Flare Gun"},
+	/*stickybomb*/{"Stickybomb Launcher"} 
 };
