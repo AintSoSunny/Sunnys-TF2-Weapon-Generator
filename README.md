@@ -2,8 +2,6 @@
 A Team Fortress 2 weapon generator built from the ground up in C++.   
 This generator tries to make *semi*-balanced weapons using a rating system, each stat has a rating, a given number of upsides are calculated and then downsides (or sometimes upsides if the weapon starts out with a rating deficit) are generated until the weapon balances out.
 
-**NOTICE: THE REPLIT HOSTING NO LONGER WORKS... I WAS BANNED WITHOUT WARNING, SO I'M TRYING TO GET IT APPEALED. UNTIL THEN I'M USING AN ALT ACCOUNT TO UPDATE THIS REPO. IF YOU WANT TO USE THIS YOU'LL HAVE TO DOWNLOAD THE SOURCE CODE YOURSELF. SORRY FOR THE INCONVIENENCE**
-
 ## Changelog: v.0.2.2
 - **Added more weapon stats, such as weapon & class specific stats, meters, and some stats that came in pairs, e.g. The Beggar's Bazooka's barrage mechanic.**
 - **Added stat flags in order to be able to pair stats together, as well as uphold the rule that all passive upsides must be paired with a passive downside.**
