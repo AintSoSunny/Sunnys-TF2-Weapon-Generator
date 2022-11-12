@@ -1,6 +1,6 @@
 #include "data.hpp"
 double version = 0.2;
-int subVersion = 2; //0.2.2
+int subVersion = 8; //0.2.8
 string versionFull = to_string(version) + "." + to_string(subVersion);
 string lineBreak(string ref, bool firstNL, bool secNL) {
 	string lb;
@@ -17,7 +17,7 @@ string lineBreak(string ref, bool firstNL, bool secNL) {
 	}
 	return lb;
 };
-const string weaponList[68] = {
+const array<string,69> weaponList = {
 	"Scattergun",
 	"Peppergun",
 	"Rocket Launcher",
@@ -74,7 +74,7 @@ const string weaponList[68] = {
 	"Rake",
 	"RIFT Fire Axe",
 	"Bottle",
-	"Sword",
+	"Sword*",
 	"Golf Club",
 	"Caber Grenade",
 	"Fists",
@@ -85,9 +85,10 @@ const string weaponList[68] = {
 	"Kukri",
 	"Bonesaw",
 	"Statue Head",
-	"Knife"
+	"Knife",
+	"Invis Watch"
 };
-const string classList[10] = {
+const array<string,10> classList = {
 	"Scout",
 	"Soldier",
 	"Pyro",
@@ -99,7 +100,7 @@ const string classList[10] = {
 	"Spy",
 	"Multi"
 };
-const string classWeapons[10][14] = { //note: placeholder is redundant because an unassigned element in an array will still be indexable / returnable and can be used as a reference. (This isn't storage effecient but the alternative method would be tedious)
+const array<array<string,14>,10> classWeapons = {{ //note: placeholder is redundant because an unassigned element in an array will still be indexable / returnable and can be used as a reference. (This isn't storage effecient but the alternative method would be tedious)
 	/*Scout*/{
 		"Scattergun",
 		"Peppergun",
@@ -147,7 +148,7 @@ const string classWeapons[10][14] = { //note: placeholder is redundant because a
 		"Caber Grenade"
 	},/*Heavy*/{
 		"Minigun",
-		"*Shotgun" //heavy specific shotgun b/c why not
+		"*Shotgun", //heavy specific shotgun b/c why not
 		"Lunchbox", //heavy specific lunchbox
 		"Fists",
 		"Boxing Gloves",
@@ -185,56 +186,57 @@ const string classWeapons[10][14] = { //note: placeholder is redundant because a
 		//"Shot*gun", // shotgun for soldier & pyro
 		"Pistol"
 	}
-}; //need placeholder b/c of find
-const string weaponSlots[5] = {
+}};
+const array<string,5> weaponSlots = {
 	"primary",
 	"secondary", 
-	"melee"/*,
-	"PDA1",
+	"melee",
+	"PDA1"/*,
 	"PDA2"
-	PDAs unused for now*/
+	PDA2 unused for now*/
 };
-const string wearables[7] = {
+
+const array<double,5> weaponSlotMods = {.95, .75, .45, .15};
+const array<string,8> wearables = {
 	"Boots",
 	"Parachute",
 	"Battle Banner",
 	"Jetpack",
 	"Shield",
-	"Backpack"
+	"Backpack",
+	"Invis Watch"
 };
-const double wearBoost[6] = {
+const array<double,7> wearBoost = {
 	35,
-	45,
-	50,
-	10,
-	75,
-	25
+	30,
+	20,
+	2.5,
+	46,
+	20,
+	100
 };
-const string alreadyBad[4] = {
+const array<string,4> alreadyBad = {
 	"*Shotgun",
 	"Syringe Gun",
 	"Gas Canister"
 };
-const double howBad[3] = {
+const array<double,3> howBad = {
 	5,
 	5.5,
 	10
 };
-const string projectileBased[13] = {
+const array<string,14> projectileBased = {
 	"Flame Thrower",
 	"Flame Launcher",
 	"Syringe Gun",
 	"Crossbow",
-	"Cleaver",
-	"Non-Milk Substance",
-	"Gas Canister",
-	"Jar-Based Karate",
+	"Bow",
 	"Rocket Launcher",
 	"Grenade Launcher",
 	"Stickybomb Launcher",
 	"Flare Gun"
 };
-const string meterWeapons[14] = {
+const array<string,14> meterWeapons = {
 	"Cleaver",
 	"Lunchbox*",
 	"Non-Milk Substance",
@@ -249,7 +251,7 @@ const string meterWeapons[14] = {
 	"Medigun",
 	"Invis Watch"
 };
-const string meterNames[14] = { //exsisting names for weapon types
+const array<string,14> meterNames = { //exsisting names for weapon types
 	"Cleaver",
 	"Drink",
 	"Jar",
@@ -265,7 +267,7 @@ const string meterNames[14] = { //exsisting names for weapon types
 	"cloak",
 	"recharge"
 }; 
-const string classMeterNames[9][3] = { //meter names that aren't weapon-type specific (will be used for added meters)
+const array<array<string,3>,9> classMeterNames = {{ //meter names that aren't weapon-type specific (will be used for added meters)
 	/*Scout*/{"Hype", "Boost"},
 	/*Soldier*/{"Rage"},
 	/*Pyro*/{"Mmph"},
@@ -275,9 +277,9 @@ const string classMeterNames[9][3] = { //meter names that aren't weapon-type spe
 	/*Medic*/{"Herzinfall"}, /*or 'Herzinfarkt' german for heart attack.. I think? I looked it up, so it might be wrong...
 I could also use Kardiotomie which means cardiomoty, or an incision in the heart, but I kinda think heart attack is clever... and it sounds cool so idk*/
 	/*Sniper*/{"Focus", "Crikey"},
-	/*Spy*/{"cloak"} //should not be accessable lol
-}; 
-const string altFireWeapons[14] = {
+	/*Spy*/{"Baugette"} //the medic meter name took alot out of me fuck off
+}}; 
+const array<string,14> altFireWeapons = {
 	"Flame Thrower",
 	"Flame Launcher",
 	"Minigun",
@@ -292,17 +294,19 @@ const string altFireWeapons[14] = {
 	"Boxing Gloves",
 	"Mittens"
 };
-const string cliplessWeapons[9] = {
-	"Flamethrower",
+const array<string,10> cliplessWeapons = {
+	"Flame Thrower",
+	"Flame Launcher",
 	"Minigun",
 	"Sniper Rifle",
+	"Bow",
 	"Cleaver",
 	"Flare Gun",
+	"Lunchbox",
 	"Laser Pointer",
-	"Medigun",
-	"Sapper"
+	"Medigun"
 };
-const string rapidFireWeapons[8] = {
+const array<string,8> rapidFireWeapons = {
 	"Flame Thrower",
 	"Minigun",
 	"Syringe Gun",
@@ -311,41 +315,40 @@ const string rapidFireWeapons[8] = {
 	"Medigun",
 	"Sapper"
 };
-const string primaryLike[6] {
+const array<string,8> primaryLike {
 	"Stickybomb Launcher",
 	"*Shotgun",
+	"Shotgun*",
 	"Medigun",
+	"Sword*",
 	"Wrench",
 	"Knife"
 };
-const string secondaryLike[5] {
+const array<string,6> secondaryLike {
+	"Grenade Launcher",
 	"Shotgun",
 	"Syringe Gun",
 	"Crossbow",
 	"Revolver"
 };
-const string throwableWeapons[7] { //first 3 are coatables; throwable also means consumable; basically something you don't always have;
+const array<string,5> throwableWeapons { //first 3 are coatables; Battle Banner & Lunchbox are no longer coatables
 	"Non-Milk Substance",
 	"Gas Canister",
 	"Jar-Based Karate",
-	"Cleaver",
-	"Lunchbox",
-	"Lunchbox*"
+	"Cleaver"
 };
-
-const string ammoTypes[10] {
+const array<string,9> ammoTypes {
 	"pellet",
 	"rocket",
 	"fire cloud",
 	"grenade",
-	"cannonball",
 	"arrow",
 	"syringe",
 	"flare",
 	"stickybomb",
 	"bullet"
 };
-const string weaponAmmoGroups[9][5] {
+const array<array<string,5>,9> weaponAmmoGroups {{
 	/*pellet*/{"Scattergun", "Peppergun", "Shotgun"},
 	/*rocket*/{"Rocket Launcher"},
 	/*fire cloud*/{"Flame Launcher"},
@@ -354,4 +357,4 @@ const string weaponAmmoGroups[9][5] {
 	/*syringe*/{"Syringe Gun", "Crossbow"},
 	/*flare*/{"Flare Gun"},
 	/*stickybomb*/{"Stickybomb Launcher"} 
-};
+}};

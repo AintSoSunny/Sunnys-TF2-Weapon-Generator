@@ -1,5 +1,18 @@
 # TF2-Weapon-Generator Full Changelog
 
+## v.0.2.3
+- **Fixed problems with currently implemented special weapon types** (Lunchbox, Shield (Demoman), Battle Banner, Coatable, Meter)
+- **Removed 'wet' from list of debuffs**
+	- The stat seemed redundant because coatables already make an enemy wet and a wetness immunity sounds extremely situational.
+- **Removed 'critical hit chance' from list of stats for conditional increase / decrease**
+	-  This was the only way critical hit chance was modified, so there is no stat modifying your critical hit chance, besides 100% chance or zero chance.
+- **Removed 'ammo from boxes & dispensers' from list of stats for conditional increase / decrease**
+	- The stat is already underwhelming most of the time as an upside, let alone as a conditional upside from things like lunchboxes and banners.
+- **Updated blacklist & stat ratings**
+- **Fixed debugging tools & other bugs**
+- **Localized updation files**
+	- This is the last time I'm doing this bit it's getting old lmao
+  
 ## v.0.2.2
 - **Added more weapon stats, such as weapon & class specific stats, meters, and some stats that came in pairs, e.g. The Beggar's Bazooka's barrage mechanic.**
 - **Added stat flags in order to be able to pair stats together, as well as uphold the rule that all passive upsides must be paired with a passive downside.**

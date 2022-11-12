@@ -3,23 +3,28 @@
 using namespace std;
 
 int main() {
-	cout << "Hello World!"; //just because
-	/*//Testing stuff
-	string arr [4][3] {
-		{"first","second","third"},
-		{"first","second"},
-		{"first"}
-	};
-	cout << "\nsizeof(arr) = " << sizeof(arr);
-	for (int i = 0; i < sizeof(arr) / sizeof(arr[0]); i++) {
-		cout << "\nsizeof(arr[" << i << "]) = " << sizeof(arr[i]);
-		for (int j = 0; j < sizeof(arr[0]) / sizeof(arr[i][0]); j++) {
-			cout << "\nsizeof(arr[" << i << "][" << j << "]) = " << sizeof(arr[i][j]);
-			cout << "\narr[" << i << "][" << j << "] = " << arr[i][j];
-		}
-		cout << endl;
-	}
-	//Generator Code*/
+	cout << "Hello World!";//just because
+	/*
+	array<int,2> arr1 = {1,2};
+	array<int,2> arr2 = {1,2};
+	array<int,2> arr3 = {3,4};
+	array<array<int,2>,2> multiArr = {{{1,2}, {3,4}}};
+	cout << "\nTrial 1: ";
+	if (arr1 == arr2) {cout << "True.\n";} else {cout << "Not True.\n";}
+	cout << "Trial 2: ";
+	if (arr1 == array<int,2>({1,2})) {cout << "True.\n";} else {cout << "Not True.\n";}
+	cout << "Trial 3: ";
+	if (arr1 == arr3) {cout << "True.\n";} else {cout << "Not True.\n";}
+	cout << "Trial 4: ";
+	if (arr1 == multiArr[0]) {cout << "True.\n";} else {cout << "Not True.\n";}
+	cout << "Trial 5: ";
+	if (multiArr[0] == array<int,2>({1,2})) {cout << "True.\n";} else {cout << "Not True.\n";}
+	cout << "Trial 6: ";
+	if (multiArr == array<array<int,2>,2>({{{1,2}, {3,4}}})) {cout << "True.\n";} else {cout << "Not True.\n";}
+	cout << "Trial 7: ";
+	if (arr3 == multiArr.back()) {cout << "True.\n";} else {cout << "Not True.\n";}
+	*/
+	//Generator Code
 	int zeroPos = versionFull.find("0", versionFull.find("."));
 	while (zeroPos != string::npos) {
 		versionFull.erase(zeroPos, 1);
@@ -27,8 +32,7 @@ int main() {
 	};
 	string tempString = "Sunny's TF2 Weapon Generator v." + versionFull;
 	cout << lineBreak(tempString) << tempString << lineBreak(tempString);
-	/*cout << "Enter seed or leave blank: \n"
-	cin >> userSeed; */
+	//cout << "Enter seed or leave blank: \n"; cin >> userSeed; 
 	vector<Wep> weapons;
 	int curWepNum = -1;
 	vector<string> paramaters(9);
@@ -42,7 +46,6 @@ int main() {
 			transform(tempString.begin(), tempString.end(), tempString.begin(), ::tolower);
 			if (tempString == "skip") {
 				skip = true;
-				fill(paramaters.begin(), paramaters.end(), "-1");
 				goto wepGeneration;
 			} else {
 				try {
@@ -53,32 +56,30 @@ int main() {
 		  	}
 			}
 			paramaters[0] = to_string(upsideNum); //this is kinda useless but whatevs
-			cout << "Randomly generate or customize / manually select weapons / stats? (1 for customize, anything else for random): ";
+			cout << "Manually select weapons / stats? (Press ENTER to repeat previous inputs; y/n): ";
 			getline(cin, tempString);
 			cout << tempString;
-			if (tempString[0] == '1') {
-				cout << "\nnote: leave feild blank to have the value randomly generated. \nChoose a weapon type OR weapon slot (generated weapon will be in selected slot): ";
+			if (tolower(tempString[0]) == 'y') {
+				cout << "\nNote: leave feild blank to have the value set to default or randomly generated. \nChoose a weapon type OR weapon slot (generated weapon will be in selected slot): ";
 				getline(cin, tempString);
-				if (cin.gcount() == 0 || find(begin(weaponList), end(weaponList), tempString) == end(weaponList) && find(begin(weaponSlots), end(weaponSlots), tempString) == end(weaponSlots)) {
-					paramaters[1] = "";
-					paramaters[2] = "";
-				} else if (find(begin(weaponSlots), end(weaponSlots), tempString) == end(weaponSlots)) {
+				tempString[0] = toupper(tempString[0]);
+				if (find(begin(weaponSlots), end(weaponSlots), tempString) != end(weaponSlots)) {
 					paramaters[1] = tempString;
 					paramaters[2] = "";
-				} else {
+				} else if (find(begin(weaponList), end(weaponList), tempString) != end(weaponList)) {
 					paramaters[1] = "";
 					paramaters[2] = tempString;
 				}
 				cout << "\nChoose custom stat coordinates? (y/n): ";
 				getline(cin, tempString);
-				if (tempString[0] == 'y') {
+				if (tolower(tempString[0]) == 'y') {
 					//for (int i = 0; i < upsideNum; i++) {
 						cout << "coming soon lol\n";
 					//}
 				}
 				cout << "\nAre these weapon's stats only when active? (y/n): "; 
 				getline(cin, tempString);
-				if (tempString[0] == 'y') {
+				if (tolower(tempString[0]) == 'y') {
 					paramaters[3] = "0";
 				} else {
 					paramaters[3] = "1";
@@ -90,32 +91,38 @@ int main() {
 				} else {
 					paramaters[4] = "1";
 				}
-				cout << "\nBypass stat rating? (there will instead be an equal amount of upsides & downsides; y/n)"; 
+				cout << "\nBypass stat rating? (there will instead be an equal amount of upsides & downsides; y/n; DEFAULT: n)"; 
 				getline(cin, tempString);
-				if (tempString[0] == 'y') {
+				if (tolower(tempString[0]) == 'y') {
 					paramaters[6] = "0";
 				} else {
 					paramaters[6] = "1";
 				}
-				cout << "\nBypass blacklist and dupe stat sheck? (stupidity may ensue; y/n): "; 
+				cout << "\nBypass blacklist and dupe stat sheck? (stupidity may ensue; y/n; DEFAULT: n): "; 
 				getline(cin, tempString);
-				if (tempString[0] == 'y') {
+				if (tolower(tempString[0]) == 'y') {
 					paramaters[7] = "0";
 				} else {
 					paramaters[7] = "1";
 				}
-				cout << "\nEnable Debug?; y/n): "; 
+				cout << "\nEnable Debug? (y/n; DEFAULT: y): "; 
 				getline(cin, tempString);
-				if (tempString[0] == 'y') {
+				if (tolower(tempString[0]) == 'y') {
 					paramaters[5] = "0";
 				} else {
 					paramaters[5] = "1";
 				}
+			} else if (tolower(tempString[0]) == 'n') {
+				fill(paramaters.begin(), paramaters.end(), "-1");
+				paramaters[0] = to_string(upsideNum);
 			}
 		}
 		wepGeneration:
 		for (int i = 0; i < paramaters.size(); i++) {
-			cout << "paramaters[\"" << i << "\"] = " << paramaters[i] << endl;
+			if (i > 2 && paramaters[i] == "") {
+				paramaters[i] = "-1";
+			}
+			cout << "paramaters[" << i << "] = \"" << paramaters[i] << "\"\n";
 		}
 		int arr[2] = {stoi(paramaters[3]), stoi(paramaters[4])};
 		bool a = true;
