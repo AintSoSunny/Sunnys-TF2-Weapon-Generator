@@ -67,11 +67,13 @@ E-mail: [aintsosunny@gmail.com](mailto:aintsosunny@gmail.com)
 
 *Note: If you have issues, I'd rather you post them to the github repo, but if you're unfamiliar with GitHub or want to contact me directly, Tumblr is your best bet.*
 ***
-## Changelog: v.0.2.9
+## Changelog: v.0.2.9a1
 
 Man, its been a while, huh.
 - **Updated the README file**
-	- Besides the changelog and description, the README is much more in-depth, now showing the features of this generator, a less in-depth summary, planned features, and links related to the generator   
+	- Besides the changelog and description, the README is much more in-depth, now showing the features of this generator, a less in-depth summary, planned features, and links related to the generator
+- **Debut of 'stable' and 'nightly' builds**
+	- I would like to more often push my updates to github so I decided to just make a new branch which contains my disaster WIP builds that are barely stable (and so I can work more easily from desktop instead of exclusively from repl.it)     
 - **Added 'Dynamic Stats'**  
 	- Dynamic stats are similar to 'Positive-Negative Split Stats' in the sense that they can be used more than once, but instead of only being used twice, they can be used as many times as possible without creating duplicates.
 - **Added Weapon Property: Is Sword**  
