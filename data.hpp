@@ -1,9 +1,12 @@
 #ifndef DATA
 #define DATA
 #include <array>
+#include <algorithm>
+#include <cctype>
+#include <iterator>
 #include <string>
+#include <iostream> 
 #include <vector>
-#include <iostream> //for debug
 using namespace std;
 extern const array<string,69> weaponList;
 extern const array<string,10> classList;
@@ -23,11 +26,15 @@ extern const array<string,10> cliplessWeapons;
 extern const array<string,8> rapidFireWeapons;
 extern const array<string,8> primaryLike;
 extern const array<string,6> secondaryLike;
-extern const array<string,5> throwableWeapons;
+extern const array<string,5> throwableWeapons; 
 extern const array<string,9> ammoTypes;
 extern const array<array<string,5>,9> weaponAmmoGroups;
 extern double version;
 extern int subVersion;
+extern string betaTag;
 extern string versionFull;
-extern string lineBreak(string ref = ">========<", bool firstNL = true, bool secNL = true); 
+extern string lineBreak(string ref = ">========<", bool firstNL = true, bool secNL = true);
+extern int isInputSetInt(int c); 
+extern int isInputSingleInt(int c); 
+extern int isInputSetWords(int c); 
 #endif

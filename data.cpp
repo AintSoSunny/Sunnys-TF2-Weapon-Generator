@@ -1,7 +1,8 @@
 #include "data.hpp"
 double version = 0.2;
-int subVersion = 8; //0.2.8
-string versionFull = to_string(version) + "." + to_string(subVersion);
+int subVersion = 9; 
+string betaTag = "a1"; //0.2.9a1
+string versionFull = to_string(version) + "." + to_string(subVersion) + betaTag;
 string lineBreak(string ref, bool firstNL, bool secNL) {
 	string lb;
 	if (firstNL == true) {
@@ -16,6 +17,15 @@ string lineBreak(string ref, bool firstNL, bool secNL) {
 		lb += "\n";
 	}
 	return lb;
+};
+int isInputSetInt(int c) {
+	return (isdigit(c) || c == ',' || c == '-'); 
+};
+int isInputSingleInt(int c) {
+	return (isdigit(c) || c == '-');
+};
+int isInputSetWords(int c) {
+	return (isalpha(c) || ispunct(c) || c == ' '); //space only no tabs
 };
 const array<string,69> weaponList = {
 	"Scattergun",
@@ -89,16 +99,16 @@ const array<string,69> weaponList = {
 	"Invis Watch"
 };
 const array<string,10> classList = {
-	"Scout",
-	"Soldier",
-	"Pyro",
-	"Demoman",
-	"Heavy",
-	"Engineer",
-	"Sniper",
-	"Medic",
-	"Spy",
-	"Multi"
+	"Scout", //0
+	"Soldier", //1
+	"Pyro", //2
+	"Demoman", //3
+	"Heavy", //4
+	"Engineer", //5
+	"Medic", //6
+	"Sniper", //7
+	"Spy", //8
+	"Multi" //9
 };
 const array<array<string,14>,10> classWeapons = {{ //note: placeholder is redundant because an unassigned element in an array will still be indexable / returnable and can be used as a reference. (This isn't storage effecient but the alternative method would be tedious)
 	/*Scout*/{
@@ -161,6 +171,12 @@ const array<array<string,14>,10> classWeapons = {{ //note: placeholder is redund
 		"Robot Arm",
 		"Construction PDA",
 		"Destruction PDA"
+	},/*Medic*/{
+		"Syringe Gun",
+		"Crossbow",
+		"Medigun",
+		"Bonesaw",
+		"Statue Head"
 	},/*Sniper*/{
 		"Sniper Rifle",
 		"Bow",
@@ -169,12 +185,6 @@ const array<array<string,14>,10> classWeapons = {{ //note: placeholder is redund
 		"Jar-Based Karate",
 		"Backpack",
 		"Kukri"
-	},/*Medic*/{
-		"Syringe Gun",
-		"Crossbow",
-		"Medigun",
-		"Bonesaw",
-		"Statue Head"
 	},/*Spy*/{
 		"Revolver",
 		"Sapper",
@@ -207,8 +217,8 @@ const array<string,8> wearables = {
 	"Invis Watch"
 };
 const array<double,7> wearBoost = {
-	35,
-	30,
+	25,
+	20,
 	20,
 	2.5,
 	46,
@@ -273,7 +283,7 @@ const array<array<string,3>,9> classMeterNames = {{ //meter names that aren't we
 	/*Pyro*/{"Mmph"},
 	/*Demo*/{"Scrumpy"}, //custom, reason obvious.	
 	/*Heavy*/{"Rage"}, //from mvm
-	/*Engi*/{"God"}, //also custom; reference to god complex... maybe too obscure? Do ppl know about that?	
+	/*Engi*/{"Omnipotence"}, //also custom; reference to god complex and stuff idk... maybe too obscure? Do ppl know about that?	
 	/*Medic*/{"Herzinfall"}, /*or 'Herzinfarkt' german for heart attack.. I think? I looked it up, so it might be wrong...
 I could also use Kardiotomie which means cardiomoty, or an incision in the heart, but I kinda think heart attack is clever... and it sounds cool so idk*/
 	/*Sniper*/{"Focus", "Crikey"},
@@ -331,7 +341,7 @@ const array<string,6> secondaryLike {
 	"Crossbow",
 	"Revolver"
 };
-const array<string,5> throwableWeapons { //first 3 are coatables; Battle Banner & Lunchbox are no longer coatables
+const array<string,5> throwableWeapons { //first 3 are coatables; Battle Banner & Lunchbox are no longer considered throwable
 	"Non-Milk Substance",
 	"Gas Canister",
 	"Jar-Based Karate",

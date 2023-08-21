@@ -1,0 +1,28 @@
+Planned Feature Implementation
+- Weapon Seed Improvements / Redesign**
+- Better Debugging & Logging**
+- Save preferences to file 
+- Non-Consle Based UI
+- Minimize (& eventually remove) use of tempInt / tempBool / tempString
+	- stats.cpp:     / tempInt: 351 / tempBool: 25 / tempString: 133 /
+	- stats.hpp:    / tempInt: 2   / tempBool: 1  / tempString: 1   /
+	- weapon.cpp:  / tempInt: 96  / tempBool: 3  / tempString: 4   /
+	- weapon.hpp: / tempInt: 1   / tempBool: 1  / tempString: 1   /
+- Make Stat Selection efficent (Maybe put remaining stats in a multidimensional array updated via the statsUsed array)
+- Fix crash errors:
+	- One somewhere in the downside stat for meters 
+	- One somewhere in SF#14
+- Fix infinite loops
+	- wl1
+	- wl$d
+- Fix other bugs
+	- $d dynamic stat seen to not clear dStat values correctly (clears stats when not supposed to), results in multiple of the same stat value in final stats (ex. crit damage resist & 2 crit damage vulnerabilities in 1 weapon)
+	- Unused values being added to dStat $s (maybe?)
+ 	- Auto-format fucked stats.cpp </3
+	- $c val storage messed up for downsides
+  - "std::out_of_range" during meter creation
+	- "On Hit: drop health pack"'s rating is glithced
+	- Tweak Stats
+		- Bump up vaxx uber & bubble ratings
+		- Make knockback have very tiny rating on hitscan
+		- Increase ratingmod for rapid fire damage bonus
