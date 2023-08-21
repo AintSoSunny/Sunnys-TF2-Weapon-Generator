@@ -56,8 +56,9 @@ This generator attempts to construct balanced weapons with a rating system, gene
 Stable Source Code Releases:  
 [GitHub](https://github.com/AintSoSunny/Sunnys-TF2-Weapon-Generator) (0.2.8)  
 [repl.it](https://replit.com/@SunnySideDown/Sunnys-TF2-Weapon-Generator-Stable-028-Release) (0.2.8)  
-Live-ish Development Builds:  
-[repl.it](https://replit.com/@AintSoSunny/Sunnys-TF2-Weapon-Generator) (0.2.9) [DEVELOPMENT IN PROGRESS] 
+Live-ish Nightly Development Builds:  
+[GitHub](https://github.com/AintSoSunny/Sunnys-TF2-Weapon-Generator/tree/nightly) (0.2.9a1)
+[repl.it](https://replit.com/@AintSoSunny/Sunnys-TF2-Weapon-Generator) (0.2.9a1)
 
 **Contact**:  
 Tumblr: [AintSoSunny.tumblr.com](https://AintSoSunny.tumblr.com)  
