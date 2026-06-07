@@ -2,6 +2,10 @@
 A Team Fortress 2 weapon generator built from the ground up in C++.   
 This generator tries to make *semi*-balanced weapons using a rating system, each stat has a rating, a given number of upsides are calculated and then downsides (or sometimes upsides if the weapon starts out with a rating deficit) are generated until the weapon balances out.
 
+## Unarchival Notice
+
+This repository was unarchived on 06/07/2026. Efforts to clean up and / or rewrite code will be prioritized over new features for a while. There will also now be a nightly branch for less stable releases that make progress to the next stable version. Hopefully, come v.0.3.0, the process to generate a weapon will be more efficent and stable that it previously was.  
+
 ## Changelog: v.0.2.8
 
 - **Added constructers for Swords, Mediguns, & Invis Watches & modified others**
